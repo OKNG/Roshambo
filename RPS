@@ -1,0 +1,200 @@
+<canvas id="gc" width="600" height="600"></canvas>
+<script>
+window.onload=function() {
+    canvas=document.getElementById("gc");
+    context=canvas.getContext("2d");
+    document.addEventListener("keydown", keyPush);
+    setInterval(game, 1000/15);
+}
+
+rockImage = new Image();
+rockImage.src = "https://public.blenderkit.com/thumbnails/assets/b4e2a5c5a45643ceb3ee19ffcda65a38/files/thumbnail_955da438-7e80-478e-a1ff-87064a3b51be.png.256x256_q85_crop-%2C.png"
+paperImage = new Image();
+paperImage.src = "https://em-content.zobj.net/source/microsoft-teams/337/roll-of-paper_1f9fb.png";
+scissorsImage = new Image();
+scissorsImage.src = "https://embed.widencdn.net/img/worldkitchen/2kdgdhwdyy/2048px/ZD_1143923_9in-Fabric-Scissors_Silo_Square_1_v2.png";
+
+
+rock = 1
+paper = 2
+scissors = 3
+
+playerID = 1;
+cpuID = 2;
+tieID = 3;
+
+currentStreak = 0;
+highestStreak = 0;
+
+playerChoice = 0;
+cpuChoice = 0;
+choiceText = "";
+cpuChoiceText = "";
+choiceImage = "";
+cpuChoiceImage = "";
+titleText = "MAKE YOUR CHOICE"
+instructions = "Rock <= | Paper ^ | => Scissors"
+gameMode = 1; // 1=selection  -1=combat
+winner = 0;
+resultText = "";
+resultTextColor = "";
+
+function game() {
+  switch(gameMode) {
+    case 1:
+      context.fillStyle = "black";
+      context.fillRect(0,0,canvas.width, canvas.height);
+
+      context.fillStyle = "white";
+      context.font = "44px Serif";
+      context.fillText(titleText, canvas.width/4, 150, canvas.width/2);
+      context.font = "34px Times New Roman";
+      context.fillText(instructions, canvas.width/6, 230, canvas.width - 100);
+
+      context.fillStyle = "orange";
+      context.font = "20px Serif";
+      context.fillText("Current Streak: " + currentStreak, canvas.width/8, canvas.height-50, canvas.width/2);
+      context.fillText("Highest Streak: " + highestStreak, canvas.width - 200, canvas.height-50, canvas.width/2);
+
+
+      context.fillStyle = "red";
+      context.font = "44px Serif";
+      context.fillText(choiceText, canvas.width/3, canvas.height-150, canvas.width/2);
+      context.drawImage(choiceImage, canvas.width/3 + 5, canvas.height/2, 120, 120);
+
+      break;
+    case -1:
+      context.fillStyle = "black";
+      context.fillRect(0,0,canvas.width, canvas.height);
+
+      context.fillStyle = "red";
+      context.font = "44px Serif";
+      context.fillText(choiceText, canvas.width/8, canvas.height-150, canvas.width/3.5);
+      context.drawImage(choiceImage, canvas.width/8 + 5, canvas.height/2, 120, 120);
+
+      context.fillText(cpuChoiceText, canvas.width/2 + 100, canvas.height-150, canvas.width/3.5);
+      context.drawImage(cpuChoiceImage, canvas.width/2 + 105, canvas.height/2, 120, 120);
+
+      context.fillStyle = resultTextColor;
+      context.fillText(resultText, canvas.width/3, 150, canvas.width/2);
+
+      context.fillStyle = "orange";
+      context.font = "20px Serif";
+      context.fillText("Current Streak: " + currentStreak, canvas.width/8, canvas.height-50, canvas.width/2);
+      context.fillText("Highest Streak: " + highestStreak, canvas.width - 200, canvas.height-50, canvas.width/2);
+
+      break;
+  }
+
+}
+
+function keyPush(event) {
+  switch(event.keyCode) {
+    case 37:
+      if(gameMode==1){
+        playerChoice = rock;
+        choiceText = "ROCK";
+        choiceImage = rockImage;
+      }
+      break;
+    case 38:
+      if(gameMode==1){
+        playerChoice = paper;
+        choiceText = "PAPER";
+        choiceImage = paperImage;
+      }
+      break;
+    case 39:
+      if(gameMode==1){
+        playerChoice = scissors;
+        choiceText = "SCISSORS";
+        choiceImage = scissorsImage;
+      }
+      break;
+    case 13:
+      if(playerChoice!= 0) gameMode*= -1;
+      if(gameMode==-1){
+        cpuChoice = randomNumber(1,3);
+        setCpuVariables(cpuChoice);
+        determineWinner(playerChoice, cpuChoice);
+      } else {
+        playerChoice = 0;
+        choiceText = "";
+        choiceImage = "";
+      }
+      break;
+  }
+}
+
+function setCpuVariables(id) {
+  if(id == 1) {
+    cpuChoiceImage = rockImage;
+    cpuChoiceText = "ROCK";
+  }
+  if(id == 2) {
+    cpuChoiceImage = paperImage;
+    cpuChoiceText = "PAPER";
+  }
+  if(id == 3) {
+    cpuChoiceImage = scissorsImage;
+    cpuChoiceText = "SCISSORS";
+  }
+}
+
+function determineWinner(player, cpu) {
+  switch(player) {
+    case 1:
+      if(cpu == paper) {
+        winner = cpuID;
+      } else if (cpu == scissors) {
+        winner = playerID;
+      } else if (cpu == rock) {
+        winner = tieID;
+      }
+      break;
+    case 2:
+      if(cpu == scissors) {
+        winner = cpuID;
+      } else if (cpu == rock) {
+        winner = playerID;
+      } else if (cpu == paper) {
+        winner = tieID;
+      }
+      break;
+      case 3:
+      if(cpu == rock) {
+        winner = cpuID;
+      } else if (cpu == paper) {
+        winner = playerID;
+      } else if (cpu == scissors) {
+        winner = tieID;
+      }
+      break;
+  }
+  setWinnerVariables(winner)
+}
+
+function setWinnerVariables(winner) {
+  if(winner == playerID) {
+    resultText = "YOU WIN";
+    resultTextColor = "green";
+    currentStreak++;
+    if(currentStreak > highestStreak) {
+      highestStreak = currentStreak;
+    }
+  }
+  if(winner == cpuID) {
+    resultText = "YOU LOSE";
+    resultTextColor = "red";
+    currentStreak = 0;
+  }
+  if(winner == tieID) {
+    resultText = "DRAW";
+    resultTextColor = "white";
+  }
+}
+
+var randomNumber  = function (min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+</script>
