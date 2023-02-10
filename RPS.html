@@ -4,7 +4,7 @@ window.onload=function() {
     canvas=document.getElementById("gc");
     context=canvas.getContext("2d");
     document.addEventListener("keydown", keyPush);
-    setInterval(game, 1000/15);
+    setInterval(game, 1000/30);
 }
 
 rockImage = new Image();
@@ -25,6 +25,9 @@ tieID = 3;
 
 currentStreak = 0;
 highestStreak = 0;
+
+imageSize = 120;
+transformation = "shrink";
 
 playerChoice = 0;
 cpuChoice = 0;
@@ -59,8 +62,8 @@ function game() {
 
       context.fillStyle = "red";
       context.font = "44px Serif";
-      context.fillText(choiceText, canvas.width/3, canvas.height-150, canvas.width/2);
-      context.drawImage(choiceImage, canvas.width/3 + 5, canvas.height/2, 120, 120);
+      context.fillText(choiceText, canvas.width/2 - 70, canvas.height-150, canvas.width/2);
+      context.drawImage(choiceImage, canvas.width/2 - 60, canvas.height/2, animateImage(imageSize, transformation), imageSize);
 
       break;
     case -1:
@@ -70,10 +73,10 @@ function game() {
       context.fillStyle = "red";
       context.font = "44px Serif";
       context.fillText(choiceText, canvas.width/8, canvas.height-150, canvas.width/3.5);
-      context.drawImage(choiceImage, canvas.width/8 + 5, canvas.height/2, 120, 120);
+      context.drawImage(choiceImage, canvas.width/8 + 5, canvas.height/2, animateImage(imageSize, transformation), imageSize);
 
       context.fillText(cpuChoiceText, canvas.width/2 + 100, canvas.height-150, canvas.width/3.5);
-      context.drawImage(cpuChoiceImage, canvas.width/2 + 105, canvas.height/2, 120, 120);
+      context.drawImage(cpuChoiceImage, canvas.width/2 + 105, canvas.height/2, imageSize, imageSize);
 
       context.fillStyle = resultTextColor;
       context.fillText(resultText, canvas.width/3, 150, canvas.width/2);
@@ -196,5 +199,14 @@ function setWinnerVariables(winner) {
 
 var randomNumber  = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
+}
+var animateImage = function(size, direction) {
+  if(direction == "grow") size++;
+  if(direction == "shrink") size--;
+  imageSize = size;
+
+  if(size == 100) transformation = "grow";
+  if(size == 120) transformation = "shrink";
+  return size;
 }
 </script>
